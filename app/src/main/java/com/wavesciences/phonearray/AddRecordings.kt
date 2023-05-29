@@ -46,6 +46,7 @@ class AddRecordings : ComponentActivity() {
         setContentView(binding!!.root)
 
         binding!!.startRecordingBtn.setOnClickListener {
+           Toast.makeText(this, "starting recording", Toast.LENGTH_SHORT).show()
            startRecording()
         }
         binding!!.stopRecordingBtn.setOnClickListener{
@@ -154,8 +155,8 @@ class AddRecordings : ComponentActivity() {
 
     companion object {
         val TAG = AddRecordings::class.java.simpleName
-        private const val SAMPLING_RATE_IN_HZ = 44100
-        private const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
+        const val SAMPLING_RATE_IN_HZ = 44100
+        const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
         private const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
     }
 }
