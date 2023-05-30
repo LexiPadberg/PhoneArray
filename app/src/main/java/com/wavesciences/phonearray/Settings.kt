@@ -1,8 +1,5 @@
 package com.wavesciences.phonearray
 
-import android.content.Context
-import android.media.AudioDeviceInfo
-import android.media.AudioManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.wavesciences.phonearray.databinding.ActivitySettingsBinding

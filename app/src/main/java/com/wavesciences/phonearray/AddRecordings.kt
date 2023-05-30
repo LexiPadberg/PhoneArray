@@ -29,7 +29,6 @@ class AddRecordings : ComponentActivity() {
     private var recordingThread1: Thread? = null
     private var recordingThread2: Thread? = null
 
-    private lateinit var mediaPlayer: MediaPlayer
 
     private val pcmBufferSize: Int
         get() {
@@ -52,8 +51,8 @@ class AddRecordings : ComponentActivity() {
         binding!!.stopRecordingBtn.setOnClickListener{
             stopRecording()
             val recordName = binding?.recordingName?.text.toString()
-            val fileName1 = getExternalFilesDir(null).toString() + "/"+ recordName +"_record1.1.pcm"
-            val fileName2 = getExternalFilesDir(null).toString() + "/" + recordName + "_record2.1.pcm"
+            val fileName1 = getExternalFilesDir(null).toString() + "/"+ recordName +"_record1.1.wav"
+            val fileName2 = getExternalFilesDir(null).toString() + "/" + recordName + "_record2.1.wav"
 
             val intent = Intent(applicationContext,
                 ManageRecordings::class.java)
@@ -71,7 +70,7 @@ class AddRecordings : ComponentActivity() {
         binding!!.buttonTestRecordings.setOnClickListener{
            try {
                 var mp = MediaPlayer()
-                mp.setDataSource(getExternalFilesDir(null).toString() + "/" + recordName + "_record1.1.pcm")
+                mp.setDataSource(getExternalFilesDir(null).toString() + "/" + recordName + "_record1.1.wav")
                 mp.start()
                 Log.d(TAG, "playing recording")
             }
@@ -130,8 +129,8 @@ class AddRecordings : ComponentActivity() {
         isRecording = true
 
 
-        val fileName1 = getExternalFilesDir(null).toString() + "/"+ recordName +"_record1.1.pcm"
-        val fileName2 = getExternalFilesDir(null).toString() + "/" + recordName + "_record2.1.pcm"
+        val fileName1 = getExternalFilesDir(null).toString() + "/"+ recordName +"_record1.1.wav"
+        val fileName2 = getExternalFilesDir(null).toString() + "/" + recordName + "_record2.1.wav"
 
         recordingThread1 = threadRecordings("recording1", recorder1!!, fileName1)
         recordingThread2 = threadRecordings("recording2", recorder2!!, fileName2)

@@ -23,12 +23,10 @@ class AdapterRecyclerView(var recordingFilePaths: List<String>)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val recordingFilePath = recordingFilePaths[position]
         holder.bind(recordingFilePath)
-
         //Log.d("AdapterRecyclerView", "Position: $position, File path: $recordingFilePath")
     }
 
     override fun getItemCount() = recordingFilePaths.size
-
 
     inner class ViewHolder(private val binding: ItemRowsBinding) :
         RecyclerView.ViewHolder(binding.root) {

@@ -20,12 +20,10 @@ class MainActivity : ComponentActivity() {
         }
         binding.manageRecordingsBtn.setOnClickListener {
             val intent = Intent(applicationContext, ManageRecordings::class.java)
-            //legIntent.putExtra("workout_type", manage.text.toString())
             startActivity(intent)
         }
         binding.settings.setOnClickListener {
             val intent = Intent(applicationContext, Settings::class.java)
-            //legIntent.putExtra("workout_type", manage.text.toString())
             startActivity(intent)
         }
     }
