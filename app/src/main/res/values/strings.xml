@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">PhoneArray</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
@@ -34,6 +34,19 @@
     <string name="permission_denied_title"> Permission Denied </string>
     <string name="permission_denied_msg">This permission has been denied. In order to continue to the application, please accept permissions.</string>
     <string name="ok"> OK </string>
+    <string name="name"> name </string>
+    <string name="test">test</string>
+    <string name="delete">delete</string>
+    <string name="share">share</string>
+    <string name="selected_item">Selected item:</string>
+    <string name="select_extension">select extension</string>
 
+    <string-array name="extensions">
+        <item>PCM</item>
+        <item>WAV</item>
+        <item>MP3</item>
+
+
+    </string-array>
 
 </resources>

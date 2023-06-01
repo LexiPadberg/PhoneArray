@@ -13,13 +13,13 @@
         android:id="@+id/homeBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="home"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="4dp"
         android:backgroundTint="@color/blue"
+        android:text="@string/home"
         android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
+        app:layout_constraintTop_toTopOf="parent" />
 
     <SearchView
         android:id="@+id/search_bar"
@@ -33,7 +33,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023" />
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recordings_holder"
         android:layout_width="match_parent"
@@ -42,44 +41,49 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="168dp" />
 
-    <Button
+    <ImageButton
         android:id="@+id/share_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
         android:backgroundTint="@color/blue"
-        android:text="share"
+        android:src="@android:drawable/ic_menu_share"
+        android:text="@string/share"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.078"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.814" />
+        app:layout_constraintVertical_bias="0.955" />
 
-    <Button
+    <ImageButton
         android:id="@+id/play_recording_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
         android:backgroundTint="@color/blue"
+        android:src="@android:drawable/ic_media_play"
+        android:text="@string/play"
         android:textColor="@color/white"
-        android:text="play"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.814" />
+        app:layout_constraintVertical_bias="0.955" />
 
-    <Button
+    <ImageButton
         android:id="@+id/delete_recording_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="288dp"
         android:backgroundTint="@color/blue"
+        android:src="@android:drawable/ic_menu_delete"
+        android:text="@string/delete"
         android:textColor="@color/white"
-        android:text="delete"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.951"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.814" />
+        app:layout_constraintVertical_bias="0.955" />
 
 
 
