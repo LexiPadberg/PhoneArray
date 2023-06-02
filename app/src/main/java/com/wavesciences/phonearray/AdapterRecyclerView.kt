@@ -1,14 +1,12 @@
 package com.wavesciences.phonearray
 
-import android.provider.ContactsContract
-import android.util.*
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
-
 import androidx.recyclerview.widget.RecyclerView
 import com.wavesciences.phonearray.databinding.ItemRowsBinding
 import java.io.File
-import java.util.logging.Filter
+
 
 
 class AdapterRecyclerView(var recordingFilePaths: List<String>)

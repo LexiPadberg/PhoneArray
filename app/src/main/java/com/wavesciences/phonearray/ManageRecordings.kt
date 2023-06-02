@@ -6,18 +6,14 @@ import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.AudioTrack
-import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
-//import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.SearchView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.wavesciences.phonearray.databinding.ActivityManageRecordingsBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,17 +24,16 @@ import java.io.FileInputStream
 import java.util.Locale
 
 
-
 class ManageRecordings: ComponentActivity() {
     private lateinit var binding: ActivityManageRecordingsBinding
-    private lateinit var mediaPlayer1: MediaPlayer
-    private lateinit var recordingListAdapter: AdapterRecyclerView
-    private var recordingFilePaths: List<String> = emptyList()
-    private lateinit var audioTrack: AudioTrack
-    private lateinit var searchView: SearchView
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var recordingtitle: String
 
+     private lateinit var mediaPlayer1: MediaPlayer
+    //  private lateinit var mediaPlayer2: MediaPlayer
+    private lateinit var recordingListAdapter: AdapterRecyclerView
+    private var recordingFilePaths = mutableListOf<String>()
+    private lateinit var audioTrack: AudioTrack
+    private lateinit var searchView : SearchView
+    //private val recordingsList = mutableListOf<File>()
 
     private val pcmBufferSize: Int
         get() {
@@ -59,34 +54,74 @@ class ManageRecordings: ComponentActivity() {
 
         val rec1 = intent.getStringExtra("recpath1")
         val rec2 = intent.getStringExtra("recpath2")
-        val extension = intent.getStringExtra("extension")
         Log.d(TAG, "rec1: $rec1")
         Log.d(TAG, "rec2: $rec2")
 
-        recyclerView = binding.recordingsHolder
-        mediaPlayer1 = MediaPlayer()
+        //mediaPlayer1 = MediaPlayer()
+        //mediaPlayer2 = MediaPlayer()
+        recordingFilePaths = listOfNotNull(rec1, rec2) as MutableList<String>
 
+        //Log.d(TAG, "recordingFilePaths: $recordingFilePaths")
 
-        recordingFilePaths = listOfNotNull(rec1,rec2)
 
         recordingListAdapter = AdapterRecyclerView(recordingFilePaths)
         binding.recordingsHolder.adapter = recordingListAdapter
         binding.recordingsHolder.layoutManager = LinearLayoutManager(this@ManageRecordings)
 
-       // recordingtitle = recordingListAdapter.title
-        searchView = binding.searchBar
 
-        val path = "/storage/emulated/0/Android/data/com.wavesciences.phonearray/files"
-        //TODO: making the directory:
-        val selectedRecording = recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
+        searchView= binding.searchBar
 
-        val recordingName = selectedRecording?. let { getFileNameFromPath(it) }
+        //add files from directory
+        val directoryPath =  "/storage/emulated/0/Android/data/com.wavesciences.phonearray/files"
+        File(directoryPath).walkTopDown().forEach {
+            if (!it.isDirectory && it.extension == "wav") {
+                recordingFilePaths.add(it.absolutePath)
+            }
+        }
 
-        val recordingTime = selectedRecording?.let { getAudioDuration(it) }
-        val directoryPath = "$recordingName.$recordingTime"
-        val directory = File(directoryPath)
-        directory.mkdir()
-        Log.d("Directory", "Directory path: $directoryPath")
+
+        recordingListAdapter.notifyDataSetChanged()
+
+
+        binding.shareBtn.setOnClickListener {
+            val selectedRecording =
+                recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
+            if (selectedRecording != null) {
+                shareRecording(selectedRecording)
+            } else{
+            Toast.makeText(this, "select a recording to share", Toast.LENGTH_SHORT).show()
+        }
+            // Share the selectedRecording from recyclerView
+        }
+
+        binding.playRecordingBtn.setOnClickListener {
+            val selectedRecording =
+                recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
+            if (selectedRecording != null) {
+                playRecording(selectedRecording)
+            }else{
+                Toast.makeText(this, "select a recording to play", Toast.LENGTH_SHORT).show()
+
+            }
+            // Play selectedRecording from recyclerView
+        }
+
+        binding.deleteRecordingBtn.setOnClickListener {
+            val selectedRecording =
+                recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
+            if (selectedRecording != null) {
+                deleteRecording(selectedRecording)
+            }else{
+                Toast.makeText(this, "select a recording to delete", Toast.LENGTH_SHORT).show()
+
+            }
+            // Delete selectedRecording from recyclerView
+        }
+
+        binding.homeBtn.setOnClickListener {
+            finish()
+        }
+
 
         binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -99,37 +134,6 @@ class ManageRecordings: ComponentActivity() {
                 return true
             }
         })
-
-        binding.shareBtn.setOnClickListener {
-            val selectedRecording = recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
-            //get the recording selected by the user
-            if (selectedRecording != null) {
-                shareRecording(selectedRecording)
-            }
-            // Share the selectedRecording from recyclerView
-        }
-
-        binding.playRecordingBtn.setOnClickListener {
-            val selectedRecording = recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
-            //get the recording selected by the user
-            if (selectedRecording != null) {
-                playRecording(selectedRecording)
-            }
-            // Play selectedRecording from recyclerView
-        }
-
-        binding.deleteRecordingBtn.setOnClickListener {
-            val selectedRecording = recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
-            //get the recording selected by the user
-            if (selectedRecording != null) {
-                deleteRecording(selectedRecording)
-            }
-            // Delete selectedRecording from recyclerView
-        }
-
-        binding.homeBtn.setOnClickListener {
-            finish()
-        }
 
     }
 
@@ -150,37 +154,25 @@ class ManageRecordings: ComponentActivity() {
         }
     }
 
-
     fun getFileNameFromPath(filePath: String): String {
         val file = File(filePath)
         return file.name
     }
+  
 
-    fun getAudioDuration(audioFilePath: String): Long {
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(audioFilePath)
-
-        val durationString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        val duration = durationString?.toLong() ?: 0
-
-        retriever.release()
-
-        return duration
-    }
-
-    private fun playRecording(recordingFilePath: String){
+    private fun playRecording(recordingFilePath: String) {
         try {
-            if (recordingFilePath.isNotEmpty()) {
+            if (!recordingFilePath.isEmpty()) {
                 GlobalScope.launch(Dispatchers.IO) {
                     val audioAttributes = AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                         .build()
 
                     val audioFormat = AudioFormat.Builder()
                         .setEncoding(AUDIO_FORMAT)
                         .setSampleRate(SAMPLING_RATE_IN_HZ)
-                        .setChannelMask(CHANNEL_CONFIG)
+                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                         .build()
 
 
@@ -192,11 +184,12 @@ class ManageRecordings: ComponentActivity() {
                         AudioManager.AUDIO_SESSION_ID_GENERATE
                     )
 
-                    audioTrack.play()
 
                     val file = File(recordingFilePath)
                     val fileInputStream = FileInputStream(file)
                     val buffer = ByteArray(pcmBufferSize)
+
+                    audioTrack.play()
 
                     var bytesRead: Int
                     while (fileInputStream.read(buffer).also { bytesRead = it } != -1) {
@@ -204,6 +197,7 @@ class ManageRecordings: ComponentActivity() {
                             audioTrack.write(buffer, 0, bytesRead)
                         }
                     }
+
 
                     fileInputStream.close()
                 }
@@ -214,20 +208,29 @@ class ManageRecordings: ComponentActivity() {
             Log.e(TAG, "Error playing recording", e)
         }
     }
-    private fun shareRecording(recordingFilePath: String) {
-        val file = File(recordingFilePath)
-        val uri = FileProvider.getUriForFile(this, "com.wavesciences.phonearray.fileprovider", file)
 
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_STREAM, uri)
-            type = "audio/wav"
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    private fun shareRecording(recordingFilePath: String) {
+        val intentShareFile = Intent(Intent.ACTION_SEND)
+        val file = File(recordingFilePath)
+        Log.d(TAG, "file path  = $recordingFilePath")
+        //val uri = FileProvider.getUriForFile(this, "com.wavesciences.phonearray.fileprovider", file)
+
+
+        if (file.exists()){
+            intentShareFile.type = "audio/*"
+            val uri = FileProvider.getUriForFile(this, "com.wavesciences.phonearray.fileprovider", file)
+            intentShareFile.putExtra(Intent.EXTRA_STREAM, uri)
+            intentShareFile.putExtra(Intent.EXTRA_SUBJECT, "Sharing File")
+            intentShareFile.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            startActivity(intentShareFile)
+        }else{
+            Toast.makeText(this, "Failed to share recording", Toast.LENGTH_SHORT).show()
         }
 
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        startActivity(shareIntent)
     }
+
+
+
 
     private fun deleteRecording(recordingFilePath: String){
         val file = File(recordingFilePath)
@@ -235,9 +238,9 @@ class ManageRecordings: ComponentActivity() {
         if (deleted) {
             recordingListAdapter.recordingFilePaths = recordingListAdapter.recordingFilePaths.filterNot { it == recordingFilePath }
             recordingListAdapter.notifyDataSetChanged()
-            Toast.makeText(this, "Recording deleted", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Recording deleted", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "Failed to delete recording", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Failed to delete recording", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -249,3 +252,4 @@ class ManageRecordings: ComponentActivity() {
         const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
     }
 }
+

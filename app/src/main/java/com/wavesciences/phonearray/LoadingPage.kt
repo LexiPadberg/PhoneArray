@@ -41,6 +41,7 @@ class LoadingPage  : ComponentActivity() {
     private fun checkPermissions() {
         val recordAudioPermission = Manifest.permission.RECORD_AUDIO
         val writeExternalStoragePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        val readExternalStoragePermission = Manifest.permission.READ_EXTERNAL_STORAGE
 
         val recordAudioPermissionGranted = ContextCompat.checkSelfPermission(
             this,
@@ -52,7 +53,14 @@ class LoadingPage  : ComponentActivity() {
             writeExternalStoragePermission
         ) == PackageManager.PERMISSION_GRANTED
 
-        if (recordAudioPermissionGranted && writeExternalStoragePermissionGranted) {
+        val readExternalStoragePermissionGranted = ContextCompat.checkSelfPermission(
+            this,
+            readExternalStoragePermission
+        ) == PackageManager.PERMISSION_GRANTED
+
+
+
+        if (recordAudioPermissionGranted && writeExternalStoragePermissionGranted && readExternalStoragePermissionGranted) {
             val intent = Intent(applicationContext, MainActivity::class.java)
             startActivity(intent)
         } else {
@@ -64,6 +72,9 @@ class LoadingPage  : ComponentActivity() {
 
             if (!writeExternalStoragePermissionGranted) {
                 permissionsToRequest.add(writeExternalStoragePermission)
+            }
+            if(!readExternalStoragePermissionGranted) {
+                permissionsToRequest.add(readExternalStoragePermission)
             }
 
             if (permissionsToRequest.isNotEmpty()) {
