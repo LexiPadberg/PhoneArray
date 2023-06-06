@@ -35,8 +35,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/back_btn"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
+        android:layout_width="380dp"
+        android:layout_height="400dp"
         android:layout_margin="5dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
@@ -49,11 +49,11 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recordings_holder"
-            android:layout_width="349dp"
-            android:layout_height="379dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="168dp"
+            tools:layout_editor_absoluteX="198dp"
             tools:listitem="@layout/item_rows" />
     </androidx.cardview.widget.CardView>
 

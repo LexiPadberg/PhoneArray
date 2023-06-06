@@ -6,7 +6,7 @@ import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.AudioTrack
-import android.media.MediaPlayer
+//import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.widget.SearchView
@@ -27,7 +27,7 @@ import java.util.Locale
 class ManageRecordings: ComponentActivity() {
     private lateinit var binding: ActivityManageRecordingsBinding
 
-     private lateinit var mediaPlayer1: MediaPlayer
+     //private lateinit var mediaPlayer1: MediaPlayer
     //  private lateinit var mediaPlayer2: MediaPlayer
     private lateinit var recordingListAdapter: AdapterRecyclerView
     private var recordingFilePaths = mutableListOf<String>()
@@ -113,13 +113,13 @@ class ManageRecordings: ComponentActivity() {
                 deleteRecording(selectedRecording)
             }else{
                 Toast.makeText(this, "select a recording to delete", Toast.LENGTH_SHORT).show()
-
             }
             // Delete selectedRecording from recyclerView
         }
 
         binding.homeBtn.setOnClickListener {
-            finish()
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
         }
 
 
@@ -154,7 +154,7 @@ class ManageRecordings: ComponentActivity() {
         }
     }
 
-    fun getFileNameFromPath(filePath: String): String {
+    private fun getFileNameFromPath(filePath: String): String {
         val file = File(filePath)
         return file.name
     }
@@ -162,7 +162,7 @@ class ManageRecordings: ComponentActivity() {
 
     private fun playRecording(recordingFilePath: String) {
         try {
-            if (!recordingFilePath.isEmpty()) {
+            if (recordingFilePath.isNotEmpty()) {
                 GlobalScope.launch(Dispatchers.IO) {
                     val audioAttributes = AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)

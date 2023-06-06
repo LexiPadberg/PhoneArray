@@ -1,16 +1,22 @@
 package com.wavesciences.phonearray
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
+import android.media.AudioDeviceInfo
 import android.media.AudioFormat
+import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.annotation.RequiresApi
 import com.wavesciences.phonearray.databinding.ActivityAddRecordingsBinding
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -22,7 +28,9 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 
-class AddRecordings : ComponentActivity() {
+
+
+class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
     private var binding: ActivityAddRecordingsBinding? = null
     private var recorder1: AudioRecord? = null
     private var recorder2: AudioRecord? = null
@@ -32,7 +40,9 @@ class AddRecordings : ComponentActivity() {
     private var recordingThread1: Thread? = null
     private var recordingThread2: Thread? = null
 
-    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var timer: Timer
+    private lateinit var realTime : TextView
+    private lateinit var waveformView: WaveFormView
 
     private val pcmBufferSize: Int
         get() {
@@ -43,10 +53,15 @@ class AddRecordings : ComponentActivity() {
             ) + 8191
             return pcmBufSize - pcmBufSize % 8192
         }
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddRecordingsBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
+
+        timer = Timer(this)
+
+        realTime = binding!!.timer
 
         binding!!.startRecordingBtn.setOnClickListener {
             Toast.makeText(this, "starting recording", Toast.LENGTH_SHORT).show()
@@ -54,12 +69,13 @@ class AddRecordings : ComponentActivity() {
         }
         binding!!.stopRecordingBtn.setOnClickListener{
             stopRecording()
-            val recordName = binding?.recordingName?.text.toString()
-            val fileName1 = getExternalFilesDir(null).toString() + "/"+ recordName +"_recording1.1.pcm"
-            val fileName2 = getExternalFilesDir(null).toString() + "/" + recordName + "_recording2.1.pcm"
 
-            var wavFile1 =  getExternalFilesDir(null).toString() + "/"+ recordName +"_recording1.1.wav"
-            var wavFile2 =  getExternalFilesDir(null).toString() + "/"+ recordName +"_recording2.1.wav"
+            val recordName = binding?.recordingName?.text.toString()
+            val fileName1 = getExternalFilesDir(null).toString() + "/"+ recordName +"_CH001.pcm"
+            val fileName2 = getExternalFilesDir(null).toString() + "/" + recordName + "_CH002.pcm"
+
+            var wavFile1 =  getExternalFilesDir(null).toString() + "/"+ recordName +"_CH001.wav"
+            var wavFile2 =  getExternalFilesDir(null).toString() + "/"+ recordName +"_CH002.wav"
 
 
             val filePathName1 = File(fileName1)
@@ -78,20 +94,24 @@ class AddRecordings : ComponentActivity() {
 
             val toast = Toast.makeText(this, "$recordName saved to your recordings.", Toast.LENGTH_SHORT)
             toast.show()
-            //TODO: add a toast saying that the recording was saved with its file name,
-            //TODO: when stop button is pressed we should also pass the recordings through with intents
+
         }
 
-        binding!!.buttonTestRecordings.setOnClickListener{
-            try {
-                var mp = MediaPlayer()
-                mp.setDataSource(getExternalFilesDir(null).toString() + "/" + recordName + "_recording1.1.pcm")
-                mp.start()
-                Log.d(TAG, "playing recording")
-            }
-            catch(e: Exception) {
-                Log.e(TAG, " Error playing recording", e)
-            }
+//        binding!!.buttonTestRecordings.setOnClickListener{
+//            try {
+//                var mp = MediaPlayer()
+//                mp.setDataSource(getExternalFilesDir(null).toString() + "/" + recordName + "_recording1.1.pcm")
+//                mp.start()
+//                Log.d(TAG, "playing recording")
+//            }
+//            catch(e: Exception) {
+//                Log.e(TAG, " Error playing recording", e)
+//            }
+//        }
+
+        binding!!.homeBtn.setOnClickListener {
+            val intent = Intent(applicationContext, MainActivity::class.java)
+            startActivity(intent)
         }
 
     }
@@ -109,7 +129,6 @@ class AddRecordings : ComponentActivity() {
         try {
             output = DataOutputStream(FileOutputStream(waveFile))
             // WAVE header
-            // see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
             writeString(output, "RIFF") // chunk id
             writeInt(output, 36 + rawData.size) // chunk size
             writeString(output, "WAVE") // format
@@ -168,13 +187,13 @@ class AddRecordings : ComponentActivity() {
         output.write(value shr 24)
     }
 
-    @Throws(IOException::class)
+
     private fun writeShort(output: DataOutputStream, value: Short) {
         output.write(value.toInt() shr 0)
         output.write(value.toInt() shr 8)
     }
 
-    @Throws(IOException::class)
+
     private fun writeString(output: DataOutputStream, value: String) {
         for (i in 0 until value.length) {
             output.write(value[i].code)
@@ -229,9 +248,6 @@ class AddRecordings : ComponentActivity() {
         }
     }
 
-    private fun convertPcmToWav(pcmFilePath: String, wavFilePath: String){
-
-    }
 
 
     @SuppressLint("MissingPermission")
@@ -261,13 +277,15 @@ class AddRecordings : ComponentActivity() {
         isRecording = true
 
 
-        val fileName1 = getExternalFilesDir(null).toString() + "/"+ recordName +"_recording1.1.pcm"
-        val fileName2 = getExternalFilesDir(null).toString() + "/" + recordName + "_recording2.1.pcm"
+        val fileName1 = getExternalFilesDir(null).toString() + "/"+ recordName +"_CH001.pcm"
+        val fileName2 = getExternalFilesDir(null).toString() + "/" + recordName + "_CH002.pcm"
         recordingThread1 = threadRecordings("recording1", recorder1!!, fileName1)
         recordingThread2 = threadRecordings("recording2", recorder2!!, fileName2)
 
         recordingThread1!!.start()
         recordingThread2!!.start()
+
+        timer.start()
     }
 
 
@@ -281,7 +299,11 @@ class AddRecordings : ComponentActivity() {
         recorder1 = null  //Release for GC
         recorder2 = null  //Release for GC
 
+
+        timer.stop()
+
     }
+
 
 
     companion object {
@@ -290,6 +312,24 @@ class AddRecordings : ComponentActivity() {
         const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
         private const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
     }
+    private fun calculateAmplitude(buffer: ShortArray, bufferSize: Int): Float {
+        var maxAmplitude = 0f
+
+        for (i in 0 until bufferSize) {
+            val amplitude = Math.abs(buffer[i].toFloat())
+            if (amplitude > maxAmplitude) {
+                maxAmplitude = amplitude
+            }
+        }
+
+        return maxAmplitude
+    }
+    override fun onTimerTick(duration: String) {
+        realTime.text = duration
+    //    waveformView.addAmplitude(calculateAmplitude().toFloat())
+    }
+
+
 }
 
 
