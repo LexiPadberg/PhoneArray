@@ -42,7 +42,10 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
 
     private lateinit var timer: Timer
     private lateinit var realTime : TextView
-    private lateinit var waveformView: WaveFormView
+
+
+    private lateinit var adapter: AdapterRecyclerView
+
 
     private val pcmBufferSize: Int
         get() {
@@ -63,6 +66,8 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
 
         realTime = binding!!.timer
 
+
+
         binding!!.startRecordingBtn.setOnClickListener {
             Toast.makeText(this, "starting recording", Toast.LENGTH_SHORT).show()
             startRecording()
@@ -77,6 +82,8 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
             var wavFile1 =  getExternalFilesDir(null).toString() + "/"+ recordName +"_CH001.wav"
             var wavFile2 =  getExternalFilesDir(null).toString() + "/"+ recordName +"_CH002.wav"
 
+            val time:String = binding!!.timer.text.toString()
+
 
             val filePathName1 = File(fileName1)
             val filePathName2 = File(fileName2)
@@ -89,6 +96,7 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
                 ManageRecordings::class.java)
             intent.putExtra("recpath1", wavPathFile1.absolutePath)
             intent.putExtra("recpath2", wavPathFile2.absolutePath)
+            intent.putExtra("time",time)
             startActivity(intent)
 
 
@@ -108,7 +116,6 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
 //                Log.e(TAG, " Error playing recording", e)
 //            }
 //        }
-
         binding!!.homeBtn.setOnClickListener {
             val intent = Intent(applicationContext, MainActivity::class.java)
             startActivity(intent)
@@ -116,7 +123,7 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
 
     }
     @Throws(IOException::class)
-    private fun rawToWave(rawFile: File, waveFile: File) {
+    fun rawToWave(rawFile: File, waveFile: File) {
         val rawData = ByteArray(rawFile.length().toInt())
         var input: DataInputStream? = null
         try {
@@ -285,7 +292,9 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
         recordingThread1!!.start()
         recordingThread2!!.start()
 
+
         timer.start()
+
     }
 
 
@@ -302,6 +311,8 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
 
         timer.stop()
 
+
+
     }
 
 
@@ -312,7 +323,7 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
         const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
         private const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
     }
-    private fun calculateAmplitude(buffer: ShortArray, bufferSize: Int): Float {
+    fun calculateAmplitude(buffer: ShortArray, bufferSize: Int): Float {
         var maxAmplitude = 0f
 
         for (i in 0 until bufferSize) {

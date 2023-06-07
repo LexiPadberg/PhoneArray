@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
+import java.util.Date
 import java.util.Locale
 
 
@@ -34,6 +35,7 @@ class ManageRecordings: ComponentActivity() {
     private lateinit var audioTrack: AudioTrack
     private lateinit var searchView : SearchView
     //private val recordingsList = mutableListOf<File>()
+    private var isRecordingPaused = false
 
     private val pcmBufferSize: Int
         get() {
@@ -63,20 +65,32 @@ class ManageRecordings: ComponentActivity() {
 
         //Log.d(TAG, "recordingFilePaths: $recordingFilePaths")
 
+        val duration = intent.getStringExtra("time")
 
         recordingListAdapter = AdapterRecyclerView(recordingFilePaths)
         binding.recordingsHolder.adapter = recordingListAdapter
         binding.recordingsHolder.layoutManager = LinearLayoutManager(this@ManageRecordings)
 
+        if (duration != null) {
+            if (rec1 != null) {
+                recordingListAdapter.updateDuration(rec1,duration)
+            }
+        }
+        if (duration != null) {
+            if (rec2 != null) {
+                recordingListAdapter.updateDuration(rec2,duration)
+            }
+        }
 
         searchView= binding.searchBar
 
         //add files from directory
         val directoryPath =  "/storage/emulated/0/Android/data/com.wavesciences.phonearray/files"
         File(directoryPath).walkTopDown().forEach {
-            if (!it.isDirectory && it.extension == "wav") {
+          //  if (!it.isDirectory && it.extension == "wav") {
                 recordingFilePaths.add(it.absolutePath)
-            }
+                val creationDate = Date(it.lastModified())
+          //  }
         }
 
 
@@ -104,6 +118,16 @@ class ManageRecordings: ComponentActivity() {
 
             }
             // Play selectedRecording from recyclerView
+        }
+
+        binding.pauseRecordingBtn.setOnClickListener {
+            val selectedRecording =
+                recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
+            if (selectedRecording != null) {
+                pauseRecording()
+            }else{
+                Toast.makeText(this, "play a recording in order to pause", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.deleteRecordingBtn.setOnClickListener {
@@ -136,6 +160,21 @@ class ManageRecordings: ComponentActivity() {
         })
 
     }
+
+    private fun pauseRecording() {
+        isRecordingPaused = !isRecordingPaused
+
+        if (isRecordingPaused) {
+            audioTrack.pause()
+            Toast.makeText(this, "Recording paused", Toast.LENGTH_SHORT).show()
+        } else {
+            audioTrack.play()
+            Toast.makeText(this, "Recording resumed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
 
     private fun filterList(query:String?) {
         if(query != null){
@@ -190,6 +229,7 @@ class ManageRecordings: ComponentActivity() {
                     val buffer = ByteArray(pcmBufferSize)
 
                     audioTrack.play()
+
 
                     var bytesRead: Int
                     while (fileInputStream.read(buffer).also { bytesRead = it } != -1) {
