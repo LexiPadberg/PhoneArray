@@ -9,6 +9,7 @@ import android.media.AudioTrack
 //import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -72,6 +73,11 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
         recordingListAdapter = AdapterRecyclerView(recordingFilePaths, this)
         binding.recordingsHolder.adapter = recordingListAdapter
         binding.recordingsHolder.layoutManager = LinearLayoutManager(this@ManageRecordings)
+        binding.backButton.visibility = View.INVISIBLE
+        binding.shareBtn.visibility = View.INVISIBLE
+        binding.playRecordingBtn.visibility = View.INVISIBLE
+        binding.deleteRecordingBtn.visibility = View.INVISIBLE
+        binding.pauseRecordingBtn.visibility = View.INVISIBLE
 
 //        if (duration != null) {
 //            if (rec1 != null) {
@@ -109,6 +115,8 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
 
             // Call the modified loadRecordingFiles function with the selected recording file path
             loadRecordingFiles(selectedRecordingFilePath)
+
+
         }
 
 
@@ -151,7 +159,15 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
 //                    .show()
 //            }
 //        }
-
+        binding.backButton.setOnClickListener {
+            getFileDirectory()
+            binding.backButton.visibility = View.INVISIBLE
+            binding.shareBtn.visibility = View.INVISIBLE
+            binding.playRecordingBtn.visibility = View.INVISIBLE
+            binding.deleteRecordingBtn.visibility = View.INVISIBLE
+            binding.pauseRecordingBtn.visibility = View.INVISIBLE
+        }
+        
         binding.deleteRecordingBtn.setOnClickListener {
             val selectedRecording =
                 recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
@@ -181,6 +197,7 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
         })
 
     }
+
 
     private fun pauseRecording() {
         isRecordingPaused = !isRecordingPaused
@@ -305,7 +322,11 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
     }
 
     fun loadRecordingFiles(directoryPath: String) {
-
+        binding.backButton.visibility = View.VISIBLE
+        binding.shareBtn.visibility = View.VISIBLE
+        binding.playRecordingBtn.visibility = View.VISIBLE
+        binding.deleteRecordingBtn.visibility = View.VISIBLE
+        binding.pauseRecordingBtn.visibility = View.VISIBLE
         //val directoryPath = "/storage/emulated/0/Android/data/com.wavesciences.phonearray/files/3"
         val directory = File(directoryPath)
         if (directory.exists() && directory.isDirectory) {
@@ -323,6 +344,27 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
             recordingListAdapter.notifyDataSetChanged()
         }
     }
+
+    fun getFileDirectory(){
+        val directoryPath = "/storage/emulated/0/Android/data/com.wavesciences.phonearray/files"
+        val directory = File(directoryPath)
+        if (directory.exists() && directory.isDirectory) {
+          val files = directory.listFiles()
+            recordingFilePaths.clear()
+
+            if (files != null) {
+                for (file in files) {
+                    if (file.isDirectory) {
+                        recordingFilePaths.add(file.path)
+                    }
+                }
+            }
+
+            recordingListAdapter.notifyDataSetChanged()
+        }
+    }
+
+
 
 
 
