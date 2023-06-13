@@ -47,6 +47,8 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
     private lateinit var adapter: AdapterRecyclerView
 
 
+
+
     private val pcmBufferSize: Int
         get() {
             val pcmBufSize = AudioRecord.getMinBufferSize(
@@ -71,16 +73,20 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
         binding!!.startRecordingBtn.setOnClickListener {
             Toast.makeText(this, "starting recording", Toast.LENGTH_SHORT).show()
             startRecording()
+
+
         }
         binding!!.stopRecordingBtn.setOnClickListener{
             stopRecording()
-
             val recordName = binding?.recordingName?.text.toString()
-            val fileName1 = getExternalFilesDir(null).toString() + "/"+ recordName +"_CH001.pcm"
-            val fileName2 = getExternalFilesDir(null).toString() + "/" + recordName + "_CH002.pcm"
+            val folderName =recordName
+            makeDirectory(recordName)
 
-            var wavFile1 =  getExternalFilesDir(null).toString() + "/"+ recordName +"_CH001.wav"
-            var wavFile2 =  getExternalFilesDir(null).toString() + "/"+ recordName +"_CH002.wav"
+
+            val fileName1 = getExternalFilesDir(null).toString() + "/${recordName}_CH001.pcm"
+            val fileName2 = getExternalFilesDir(null).toString() + "/${recordName}_CH002.pcm"
+            var wavFile1 = getExternalFilesDir(null).toString() + "/${recordName}_CH001.wav"
+            var wavFile2 = getExternalFilesDir(null).toString() + "/${recordName}_CH002.wav"
 
             val time:String = binding!!.timer.text.toString()
 
@@ -91,6 +97,11 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
             val wavPathFile2 = File(wavFile2)
             rawToWave(filePathName1, wavPathFile1)
             rawToWave(filePathName2, wavPathFile2)
+            val directory = File(getExternalFilesDir(null), folderName)
+            wavPathFile1.renameTo(File(directory,wavPathFile1.name))
+            wavPathFile2.renameTo(File(directory,wavPathFile2.name))
+            filePathName1.delete()
+            filePathName2.delete()
 
             val intent = Intent(applicationContext,
                 ManageRecordings::class.java)
@@ -105,17 +116,7 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
 
         }
 
-//        binding!!.buttonTestRecordings.setOnClickListener{
-//            try {
-//                var mp = MediaPlayer()
-//                mp.setDataSource(getExternalFilesDir(null).toString() + "/" + recordName + "_recording1.1.pcm")
-//                mp.start()
-//                Log.d(TAG, "playing recording")
-//            }
-//            catch(e: Exception) {
-//                Log.e(TAG, " Error playing recording", e)
-//            }
-//        }
+
         binding!!.homeBtn.setOnClickListener {
             val intent = Intent(applicationContext, MainActivity::class.java)
             startActivity(intent)
@@ -163,7 +164,7 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
     }
 
     @Throws(IOException::class)
-    fun fullyReadFileToBytes(f: File): ByteArray? {
+    fun fullyReadFileToBytes(f: File): ByteArray {
         val size = f.length().toInt()
         val bytes = ByteArray(size)
         val tmpBuff = ByteArray(size)
@@ -225,7 +226,7 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
                         os.flush()
                         os.close()
                         Log.d(TAG, ">>>>>>>>>>> Total Bytes for $recordingName: $totalBytes")
-                    validateRecordedFile(fileName)
+
                     }
                 }
             } catch (e: Exception) {
@@ -233,28 +234,6 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
             }
         }
     }
-    private fun validateRecordedFile(fileName: String) {
-        val mediaPlayer = MediaPlayer()
-        try {
-            mediaPlayer.setDataSource(fileName)
-            mediaPlayer.setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build()
-            )
-            mediaPlayer.prepare()
-
-            // File is valid and can be played
-        } catch (e: Exception) {
-            Log.e(TAG, "Error validating recording: ${e.message}")
-            // File is corrupted or in an unsupported format
-            // Handle the error appropriately
-        } finally {
-            mediaPlayer.release()
-        }
-    }
-
 
 
     @SuppressLint("MissingPermission")
@@ -339,6 +318,19 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
         realTime.text = duration
     //    waveformView.addAmplitude(calculateAmplitude().toFloat())
     }
+    private fun makeDirectory(folderName: String) {
+        val folder = File(getExternalFilesDir(null), folderName)
+        if (!folder.exists()) {
+            val created = folder.mkdirs()
+            if (!created) {
+                Log.e(TAG, "Failed to create folder: $folderName")
+                return
+            }
+        }
+
+        Log.d(TAG, "New folder created: ${folder.absolutePath} ")
+    }
+
 
 
 }
