@@ -4,16 +4,25 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioManager
+<<<<<<< Updated upstream
 import android.media.AudioRecord
 import android.media.AudioTrack
 //import android.media.MediaPlayer
+=======
+import android.media.AudioTrack
+import android.media.MediaPlayer
+>>>>>>> Stashed changes
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+<<<<<<< Updated upstream
 import androidx.core.content.FileProvider
+=======
+import com.wavesciences.phonearray.AdapterRecyclerView
+>>>>>>> Stashed changes
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.wavesciences.phonearray.databinding.ActivityManageRecordingsBinding
 import kotlinx.coroutines.Dispatchers
@@ -22,16 +31,25 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
+<<<<<<< Updated upstream
 import java.util.Date
 import java.util.Locale
 
 
 class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickListener {
+=======
+import java.io.IOException
+
+
+
+class ManageRecordings: ComponentActivity() {
+>>>>>>> Stashed changes
     private lateinit var binding: ActivityManageRecordingsBinding
 
     //private lateinit var mediaPlayer1: MediaPlayer
     //  private lateinit var mediaPlayer2: MediaPlayer
     private lateinit var recordingListAdapter: AdapterRecyclerView
+<<<<<<< Updated upstream
     private var recordingFilePaths = mutableListOf<String>()
     private lateinit var audioTrack: AudioTrack
     private lateinit var searchView: SearchView
@@ -50,6 +68,10 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
             return pcmBufSize - pcmBufSize % 8192
         }
 
+=======
+    private var recordingFilePaths: List<String> = emptyList()
+    private lateinit var audioTrack: AudioTrack
+>>>>>>> Stashed changes
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +101,7 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
         binding.deleteRecordingBtn.visibility = View.INVISIBLE
         binding.pauseRecordingBtn.visibility = View.INVISIBLE
 
+<<<<<<< Updated upstream
 //        if (duration != null) {
 //            if (rec1 != null) {
 //                recordingListAdapter.updateDuration(rec1, duration)
@@ -178,10 +201,33 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
             }
             // Delete selectedRecording from recyclerView
         }
+=======
+
+       //val selectedRecording = adapter.recordingFilePaths.getOrNull(adapter.selectedPosition)
+
+        binding.shareBtn.setOnClickListener {
+        val selectedRecording = recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.checkedRadioButtonId)
+
+       }
+
+       binding.playRecordingBtn.setOnClickListener {
+          val selectedRecording = recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.checkedRadioButtonId)
+          playAudio(rec1)
+        }
+
+
+        binding.deleteRecordingBtn.setOnClickListener {
+            val selectedRecording = recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.checkedRadioButtonId)
+
+        }
+
+
+>>>>>>> Stashed changes
 
         binding.homeBtn.setOnClickListener {
             val intent = Intent(applicationContext, MainActivity::class.java)
             startActivity(intent)
+<<<<<<< Updated upstream
         }
 
 
@@ -390,6 +436,69 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
 
     override fun onDirectoryClick(directoryPath: String) {
         loadRecordingFiles(directoryPath)
+=======
+        }
+
+    }
+    private fun playAudio(recordingFilePath: String?) {
+
+        try {
+            if (!recordingFilePath.isNullOrEmpty()) {
+                GlobalScope.launch(Dispatchers.IO) {
+                    val audioAttributes = AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build()
+
+                    val audioFormat = AudioFormat.Builder()
+                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                        .setSampleRate(AddRecordings.SAMPLING_RATE_IN_HZ)
+                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                        .build()
+
+                    val bufferSizeInBytes = AudioTrack.getMinBufferSize(
+                        AddRecordings.SAMPLING_RATE_IN_HZ,
+                        AudioFormat.CHANNEL_OUT_MONO,
+                        AudioFormat.ENCODING_PCM_16BIT
+                    )
+
+                    audioTrack = AudioTrack(
+                        audioAttributes,
+                        audioFormat,
+                        bufferSizeInBytes,
+                        AudioTrack.MODE_STREAM,
+                        AudioManager.AUDIO_SESSION_ID_GENERATE
+                    )
+
+                    audioTrack.play()
+
+                    val file = File(recordingFilePath)
+                    val fileInputStream = FileInputStream(file)
+                    val buffer = ByteArray(bufferSizeInBytes)
+
+                    var bytesRead: Int
+                    while (fileInputStream.read(buffer).also { bytesRead = it } != -1) {
+                        withContext(Dispatchers.Main) {
+                            audioTrack.write(buffer, 0, bytesRead)
+                        }
+                    }
+
+                    fileInputStream.close()
+                }
+            } else {
+                Log.e(AddRecordings.TAG, "Recording file path is null or empty")
+            }
+        } catch (e: Exception) {
+            Log.e(AddRecordings.TAG, "Error playing recording", e)
+        }
+    }
+
+    companion object {
+        private const val TAG = "ManageRecordings"
+             const val SAMPLING_RATE_IN_HZ = 44100
+             const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
+             const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
+>>>>>>> Stashed changes
     }
 }
 

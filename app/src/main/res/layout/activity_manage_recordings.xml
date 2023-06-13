@@ -33,6 +33,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023" />
 
+<<<<<<< Updated upstream
     <androidx.cardview.widget.CardView
         android:id="@+id/back_btn"
         android:layout_width="380dp"
@@ -42,11 +43,33 @@
         app:cardElevation="10dp"
         app:cardMaxElevation="5dp"
         app:cardPreventCornerOverlap="true"
+=======
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recordings_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.284"
+        tools:layout_editor_absoluteX="-16dp" />
+
+    <Button
+        android:id="@+id/share_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:backgroundTint="@color/blue"
+        android:text="share"
+        android:textColor="@color/white"
+        app:srcCompat="@android:drawable/ic_menu_share"
+>>>>>>> Stashed changes
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+<<<<<<< Updated upstream
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recordings_holder"
             android:layout_width="match_parent"
@@ -62,6 +85,17 @@
         android:layout_width="53dp"
         android:layout_height="51dp"
         android:src="@drawable/back_button"
+=======
+    <Button
+        android:id="@+id/play_recording_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="160dp"
+        android:backgroundTint="@color/blue"
+        android:textColor="@color/white"
+        android:text="play"
+        app:srcCompat = "@android:drawable/ic_media_play"
+>>>>>>> Stashed changes
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.955"
@@ -72,7 +106,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< Updated upstream
         android:gravity="center"
+=======
+        android:layout_marginStart="288dp"
+        android:backgroundTint="@color/blue"
+        android:textColor="@color/white"
+        android:text="delete"
+        app:srcCompat="@android:drawable/ic_delete"
+>>>>>>> Stashed changes
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"

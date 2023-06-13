@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     tools:context=".AdapterRecyclerView">
 
+<<<<<<< Updated upstream
     <androidx.cardview.widget.CardView
         android:id="@+id/fileOrFolderView"
         android:layout_width="390dp"
@@ -88,4 +89,32 @@
 
 
 
+=======
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.223"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+
+    <RadioButton
+        android:id="@+id/recording_name_recycler"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:backgroundTint="@color/purple_200"
+        android:text="Name"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.124"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.345" />
+    </RadioGroup>
+>>>>>>> Stashed changes
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,8 +7,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+<<<<<<< Updated upstream
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+=======
+import android.widget.RadioButton
+>>>>>>> Stashed changes
 import androidx.recyclerview.widget.RecyclerView
 import com.wavesciences.phonearray.AddRecordings.Companion.TAG
 import com.wavesciences.phonearray.databinding.ItemRowsBinding
@@ -33,8 +37,16 @@ class AdapterRecyclerView(var recordingFilePaths: List<String>, private val mana
         fun onDirectoryClick(directoryPath: String)
     }
 
+<<<<<<< Updated upstream
 
 
+=======
+class AdapterRecyclerView( val recordingFilePaths: List<String>)
+    : RecyclerView.Adapter<AdapterRecyclerView.ViewHolder>(){
+
+    private lateinit var binding: ItemRowsBinding
+    var checkedRadioButtonId = RecyclerView.NO_POSITION
+>>>>>>> Stashed changes
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -74,6 +86,7 @@ class AdapterRecyclerView(var recordingFilePaths: List<String>, private val mana
     inner class ViewHolder(private val binding: ItemRowsBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+<<<<<<< Updated upstream
         init {
             binding.root.setOnClickListener {
                 val position = bindingAdapterPosition
@@ -86,6 +99,16 @@ class AdapterRecyclerView(var recordingFilePaths: List<String>, private val mana
         fun bind(recordingFilePath: String) {
             val fileName = getFileNameFromPath(recordingFilePath)
             binding.recordingNameRecycler.text = fileName
+=======
+        private val radioButtonName: RadioButton = binding.recordingNameRecycler
+        fun bind(recordingFilePath: String) {
+            val fileName = getFileNameFromPath(recordingFilePath)
+            radioButtonName.text = fileName
+            radioButtonName.isChecked = checkedRadioButtonId ==position
+
+            //notify Recycler view that the data has changed
+        }
+>>>>>>> Stashed changes
 
             val file = File(recordingFilePath)
 

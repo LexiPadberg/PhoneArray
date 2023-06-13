@@ -4,10 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
+<<<<<<< Updated upstream
 import android.media.AudioDeviceInfo
 import android.media.AudioFormat
 import android.media.AudioManager
+=======
+import android.media.AudioFormat
+import android.media.AudioManager
+import android.media.AudioManager.AudioPlaybackCallback
+import android.media.AudioPlaybackConfiguration
+>>>>>>> Stashed changes
 import android.media.AudioRecord
+import android.media.AudioTrack
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Build
@@ -18,6 +26,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import com.wavesciences.phonearray.databinding.ActivityAddRecordingsBinding
+<<<<<<< Updated upstream
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.File
@@ -28,6 +37,18 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 
+=======
+import com.wavesciences.phonearray.databinding.ActivityManageRecordingsBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileInputStream
+
+import java.io.FileOutputStream
+import java.io.IOException
+>>>>>>> Stashed changes
 
 
 class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
@@ -40,6 +61,7 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
     private var recordingThread1: Thread? = null
     private var recordingThread2: Thread? = null
 
+<<<<<<< Updated upstream
     private lateinit var timer: Timer
     private lateinit var realTime : TextView
 
@@ -47,6 +69,11 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
     private lateinit var adapter: AdapterRecyclerView
 
 
+=======
+    //private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var mediaPlayer1: MediaPlayer
+    private lateinit var audioTrack: AudioTrack
+>>>>>>> Stashed changes
 
 
     private val pcmBufferSize: Int
@@ -64,11 +91,15 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
         binding = ActivityAddRecordingsBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
 
+<<<<<<< Updated upstream
         timer = Timer(this)
 
         realTime = binding!!.timer
 
 
+=======
+        mediaPlayer1 = MediaPlayer()
+>>>>>>> Stashed changes
 
         binding!!.startRecordingBtn.setOnClickListener {
             Toast.makeText(this, "starting recording", Toast.LENGTH_SHORT).show()
@@ -122,6 +153,7 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
             startActivity(intent)
         }
 
+<<<<<<< Updated upstream
     }
     @Throws(IOException::class)
     fun rawToWave(rawFile: File, waveFile: File) {
@@ -183,6 +215,13 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
             throw e
         } finally {
             fis.close()
+=======
+        binding!!.buttonTestRecordings.setOnClickListener{
+
+               val recordName = binding?.recordingName?.text.toString()
+              // playAudio(getExternalFilesDir(null).toString() + "/" + recordName + "_record1.1.pcm")
+
+>>>>>>> Stashed changes
         }
         return bytes
     }
@@ -293,13 +332,85 @@ class AddRecordings : ComponentActivity(), Timer.onTimerTickListener {
 
 
     }
+//    private fun playAudio(recordingFilePath: String?) {
+//        try {
+//            if (!recordingFilePath.isNullOrEmpty()) {
+//                GlobalScope.launch(Dispatchers.IO) {
+//                    val audioAttributes = AudioAttributes.Builder()
+//                        .setUsage(AudioAttributes.USAGE_MEDIA)
+//                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+//                        .build()
+//
+//                    val audioFormat = AudioFormat.Builder()
+//                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+//                        .setSampleRate(SAMPLING_RATE_IN_HZ)
+//                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+//                        .build()
+//
+//                    val bufferSizeInBytes = AudioTrack.getMinBufferSize(
+//                        SAMPLING_RATE_IN_HZ,
+//                        AudioFormat.CHANNEL_OUT_MONO,
+//                        AudioFormat.ENCODING_PCM_16BIT
+//                    )
+//
+//                    audioTrack = AudioTrack(
+//                        audioAttributes,
+//                        audioFormat,
+//                        bufferSizeInBytes,
+//                        AudioTrack.MODE_STREAM,
+//                        AudioManager.AUDIO_SESSION_ID_GENERATE
+//                    )
+//
+//                    audioTrack.play()
+//
+//                    val file = File(recordingFilePath)
+//                    val fileInputStream = FileInputStream(file)
+//                    val buffer = ByteArray(bufferSizeInBytes)
+//
+//                    var bytesRead: Int
+//                    while (fileInputStream.read(buffer).also { bytesRead = it } != -1) {
+//                        withContext(Dispatchers.Main) {
+//                            audioTrack.write(buffer, 0, bytesRead)
+//                        }
+//                    }
+//
+//                    fileInputStream.close()
+//                }
+//            } else {
+//                Log.e(TAG, "Recording file path is null or empty")
+//            }
+//        } catch (e: Exception) {
+//            Log.e(TAG, "Error playing recording", e)
+//        }
+    // }
+//    private fun playAudio(recordingFilePath: String?){
+//        //mediaPlayer1 = MediaPlayer()
+//        try{
+//
+//            if(!recordingFilePath.isNullOrEmpty()) {
+//                mediaPlayer1.reset()
+//                mediaPlayer1.setDataSource(recordingFilePath)
+//                mediaPlayer1.prepare()
+//                mediaPlayer1.start()
+//                Log.d(TAG, "playing recording")
+//            }else {
+//                Log.e(TAG, "Recording file path is null or empty")
+//            }
+//        } catch (e: Exception) {
+//            Log.e(TAG, " Error playing recording", e)
+//        }
+//    }
 
 
 
     companion object {
         val TAG = AddRecordings::class.java.simpleName
         const val SAMPLING_RATE_IN_HZ = 44100
+<<<<<<< Updated upstream
         const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
+=======
+        private const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
+>>>>>>> Stashed changes
         private const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
     }
     fun calculateAmplitude(buffer: ShortArray, bufferSize: Int): Float {
