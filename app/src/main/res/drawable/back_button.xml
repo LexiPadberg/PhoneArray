@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon
+    android:height="36dp"
+    android:width="36dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <foreground android:drawable="@mipmap/back_button_foreground"/>
+</adaptive-icon>

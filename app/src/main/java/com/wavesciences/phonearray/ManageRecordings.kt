@@ -101,7 +101,7 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
         File(directoryPath).walkTopDown().forEach {
             if (it.isDirectory) {
                 recordingFilePaths.add(it.absolutePath)
-                val creationDate = Date(it.lastModified())
+               // val creationDate = Date(it.lastModified())
                // binding.playRecordingBtn.isEnabled = false
             }
         }
@@ -167,7 +167,7 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
             binding.deleteRecordingBtn.visibility = View.INVISIBLE
             binding.pauseRecordingBtn.visibility = View.INVISIBLE
         }
-        
+
         binding.deleteRecordingBtn.setOnClickListener {
             val selectedRecording =
                 recordingListAdapter.recordingFilePaths.getOrNull(recordingListAdapter.selectedPosition)
@@ -350,7 +350,7 @@ class ManageRecordings : ComponentActivity(),  AdapterRecyclerView.OnItemClickLi
         val directory = File(directoryPath)
         if (directory.exists() && directory.isDirectory) {
           val files = directory.listFiles()
-            recordingFilePaths.clear()
+          recordingFilePaths.clear()
 
             if (files != null) {
                 for (file in files) {
